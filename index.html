@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="User">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <title>Registration</title>
+
+    
+<!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+    <link href='https://fonts.googleapis.com/css?family=Asap:400,400italic' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" href="assets/main.css">
+   
+  </head>
+  <body ng-controller="MainCtrl">
+    <div class="jumbotron text-ccenter">
+      <a ng-click="setCurrentCategory(null)" class="logo">Register</a>
+    </div>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-1 sidebar">
+          <ul class="nav nav-sidebar">
+            <li ng-repeat="category in categories" ng-class="{'active':isCurrentCategory(category)}">
+            <a ng-click="setCurrentCategory(category)" href="#">{{ category.name }}</a>
+            </li>
+          </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-1">
+
+          <div ng-repeat="user in users | filter:{category:currentCategory.name}">
+
+            <button type="button" class="close" ng-click="deleteUser(user)">&times;</button>
+            <button type="button" class="btn btn-link" ng-click="setEditedUser(user);startEditing();"><span class="glyphicon glyphicon-pencil"></span></button>{{ user.name }}
+          </div>
+
+<!--  CREATE NEW BOOK MARK-->
+<div ng-if="shouldShowCreating()">
+
+  <button type="button" class="btn btn-link" ng-click="startCreating()"><span class="glyphicon glyphicon-plus" ></span>Create User</button>
+
+  <div ng-if="isCreating">
+
+    <form ng-show="isCreating" role="form" ng-submit="createUser(newUser)" novalidate>
+
+      <div class="form-group" >
+          <label for="newUserFirstName">First Name</label>
+          <input type="text" class="form-control" id="newUserFirstName" ng-model="newUser.firstName" action="required" placeholder="Enter first name" action="required">
+      </div>
+
+      <div class="form-group">
+          <label for="newUserLastName">Last Name</label>
+          <input type="text" class="form-control" id="newUserLastName" ng-model="newUser.lastName" placeholder="Enter last name">
+      </div>
+
+      <div class="form-group">
+          <label for="newUserStreetAddress">Street Address</label>
+          <input type="text" class="form-control" id="newStreetAddress" ng-model="newUser.streetAddress" placeholder="Enter your address">
+      </div>
+
+      <div class="form-group">
+          <label for="newUserCity"> City</label>
+          <input type="text" class="form-control" id="newUserCity" ng-model="newUser.city" placeholder="Enter your city">
+      </div>
+
+      <div class="form-group">
+          <label for="newUserState"> State</label>
+          <input type="text" class="form-control" id="newUserState" ng-model="newUser.state" placeholder="Enter your state">
+      </div>
+
+       <div class="form-group">
+          <label for="newUserZip"> Zip</label>
+          <input type="text" class="form-control" id="newUserZip" ng-model="newUser.zip" placeholder="Enter your zip">
+      </div>
+
+       <div class="form-group">
+          <label for="newUserCellPhoneNumber"> Cell Phone Number</label>
+          <input type="text" class="form-control" id="newUserCellPhoneNumber" ng-model="newUser.cellPhoneNumber" placeholder="Enter your cell phone number">
+      </div>
+
+
+      <div class="form-group">
+          <label for="newUserFavoriteCity"> Favorite City</label>
+          <input type="text" class="form-control" id="newUserFavoriteCity" ng-model="newUser.favoriteCity" placeholder="Enter your favorite city">
+      </div>
+
+      <div class="form-group">
+          <label for="newUserStatus"> Status</label><br/>
+            <input type="radio" ng-model="newUser.status" value="customer">Customer</label><br/>
+          <label>
+            <input type="radio" ng-model="newUser.status" value="employee">Employee</label>
+      </div>
+
+
+       <div class="form-group">
+          <label for="newUserUserName"> User Name</label>
+          <input type="text" class="form-control" id="newUserUserName" ng-model="newUser.userName" placeholder="Enter your user name">
+      </div>
+
+      <div class="form-group">
+          <label for="newUserPassword"> Password</label>
+          <input type="password" class="form-control" id="newUserPassword" ng-model="newUser.password" placeholder="Enter your password">
+      </div>
+
+      <div class="form-group">
+          <label for="newUserEmployee"> Employee ID</label>
+          <input type="text" class="form-control" id="newUserEmployee" ng-model="newUser.employee" placeholder="Enter your employee ID">
+      </div>
+
+       <div class="form-group">
+          <label for="newUserCompanyName">Company Name</label>
+          <input type="text" class="form-control" id="newUserCompanyName" ng-model="newUser.companyName" placeholder="Enter your Company Name">
+      </div>
+
+    <button type="submit" class="btn btn-info btn-lg" ng-click="startCreating()">Create</button>
+
+    <button type="button" class="btn btn-default btn-lg pull-right" ng-click="cancelCreating()">Cancel</button>
+
+    </form>
+  
+  </div>
+</div>
+
+<!--Editing a bookmark-->
+<div ng-if="shouldshowEditing()">
+  <h4>
+    Editing {{ editedUser.name }}
+    </h4>
+
+  <form role="form" ng-submit="updateUser(editedUser)" novalidate>
+     
+      <div class="form-group">
+          <label>
+              User First Name
+          </label>
+          <input type="text" class="form-control" ng-model="editedUser.firstName" placeholder="Enter First Name">
+      </div>
+
+        <div class="form-group">
+          <label>
+              User Last Name
+          </label>
+          <input type="text" class="form-control" ng-model="editedUser.lastName" placeholder="Enter Last Name">
+      </div>
+
+        <div class="form-group">
+          <label>
+              Street Address
+          </label>
+          <input type="text" class="form-control" ng-model="editedUser.streetAddress" placeholder="Enter StreetAddress">
+      </div>
+
+         <div class="form-group">
+          <label>
+             City
+          </label>
+          <input type="text" class="form-control" ng-model="editedUser.city" placeholder="Enter City">
+      </div>
+
+        <div class="form-group">
+          <label>
+              State
+          </label>
+          <input type="text" class="form-control" ng-model="editedUser.state" placeholder="Enter State">
+      </div>
+
+        <div class="form-group">
+          <label>
+              Zip Code
+          </label>
+          <input type="text" class="form-control" ng-model="editedUser.zip" placeholder="Enter Zip">
+      </div>
+
+        <div class="form-group">
+          <label>
+              Cell Phone
+          </label>
+          <input type="text" class="form-control" ng-model="editedUser.cellPhoneNumber" placeholder="Enter Cell Phone Number">
+      </div>
+
+        <div class="form-group">
+          <label>
+              Favorite City
+          </label>
+          <input type="text" class="form-control" ng-model="editedUser.favoriteCity" placeholder="Enter Favorite City">
+      </div>
+
+        <div class="form-group">
+          <label>
+              Status
+          </label>
+             <input type="radio" ng-model="editedUser.status" value="customer">Customer</label><br/>
+          <label>
+              <input type="radio" ng-model="editedUser.status" value="employee">Employee</label>
+      </div>
+
+      <div class="form-group">
+        <label>
+              User Name
+        </label>
+         <input type="text" class="form-control" ng-model="editedUser.userName" placeholder="Enter User Name">
+      </div>
+
+        <div class="form-group">
+          <label>
+              Password
+          </label>
+          <input type="password" class="form-control" ng-model="editedUser.password" placeholder="Enter password">
+      </div>
+
+        <div class="form-group">
+          <label>
+              Employee ID
+          </label>
+          <input type="text" class="form-control" ng-model="editedUser.employee" placeholder="Enter EmployeeID">
+      </div>
+
+        <div class="form-group">
+          <label>
+              Company Name
+          </label>
+          <input type="text" class="form-control" ng-model="editedUser.companyName" placeholder="Enter Company Name">
+      </div>
+
+
+
+
+      <button type="submit" class="btn btn-info btn-lg">
+        Save
+      </button>
+
+      <button type="button" class="btn btn-default btn-lg pull-right" ng-click="cancelEditing()">
+        Cancel
+      </button>
+  </form>
+
+
+
+
+ 
+</div>
+
+
+        </div>
+      </div>
+    </div>
+
+
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+<!--Lodash for manipulating-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.13.1/lodash.min.js"></script>
+
+<!--Angular js-->
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+
+    <script src="app/User-app.js"></script>
+
+  </body>
+</html>
